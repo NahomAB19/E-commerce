@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .container {
+            margin: 2em 0;
+            padding: 2em;
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        h2 {
+            margin-bottom: 1em;
+            color: #333;
+        }
+        label {
+            margin: 0.5em 0 0.2em;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+            padding: 0.8em;
+            margin-bottom: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        button {
+            padding: 0.8em;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 4px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 1em;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .message {
+            margin-top: 1em;
+            color: #4CAF50;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to Our Website</h1>
+    </header>
+
+    <div class="container">
+        <form id="create-account-form">
+            <h2>Create Account</h2>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <button type="submit" id="create-account-btn">Create Account</button>
+            <div id="account-message" class="message"></div>
+        </form>
+
+        <form id="bank-statement-form">
+            <!-- Bank statement form -->
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('create-account-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Disable form submission while processing
+            document.getElementById('create-account-btn').disabled = true;
+
+            // Get form values
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value;
+
+            // Create account object
+            const account = {
+                username: username,
+                password: password,
+                email: email
+            };
+
+            // Save account to localStorage (you can use server-side storage for production)
+            localStorage.setItem('userAccount', JSON.stringify(account));
+
+            // Inform user
+            const accountMessage = document.getElementById('account-message');
+            accountMessage.textContent = 'Account Created Successfully!';
+
+            // Optionally, redirect to another page or clear the form
+            document.getElementById('create-account-form').reset();
+
+            // Re-enable form submission
+            document.getElementById('create-account-btn').disabled = false;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Manage Clothes</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+            color: white;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="number"], input[type="file"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        #cancelEdit {
+            background-color: #dc3545;
+            display: none;
+        }
+
+        #cancelEdit:hover {
+            background-color: #c82333;
+        }
+
+        .item-list {
+            margin-top: 20px;
+        }
+
+        .item {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .item:hover {
+            transform: translateY(-5px);
+        }
+
+        .item img {
+            max-width: 50px;
+            margin-right: 15px;
+            border-radius: 4px;
+        }
+
+        .item-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .item-details p {
+            margin: 0 0 5px 0;
+        }
+
+        .item-buttons button {
+            padding: 5px 10px;
+            margin-left: 5px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .item-buttons button:hover {
+            background-color: #0056b3;
+        }
+
+        .item-buttons .remove-button {
+            background-color: #dc3545;
+        }
+
+        .item-buttons .remove-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Manage Clothes</h1>
+    <div class="container">
+        <form id="addClothesForm">
+            <div class="form-group">
+                <label for="image">Image:</label>
+                <input type="file" id="image" accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <label for="size">Size:</label>
+                <input type="text" id="size" required>
+            </div>
+            <div class="form-group">
+                <label for="price">Price:</label>
+                <input type="number" id="price" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" rows="4" required></textarea>
+            </div>
+            <button type="submit">Save Clothes</button>
+            <button type="button" id="cancelEdit">Cancel Edit</button>
+        </form>
+    </div>
+
+    <div class="container item-list" id="itemList"></div>
+
+    <script>
+        let editIndex = -1;
+
+        document.getElementById('addClothesForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const imageInput = document.getElementById('image');
+            const size = document.getElementById('size').value;
+            const price = document.getElementById('price').value;
+            const description = document.getElementById('description').value;
+
+            if (editIndex === -1) {
+                const file = imageInput.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const newClothes = {
+                        image: e.target.result,
+                        size: size,
+                        price: `$${price}`,
+                        description: description
+                    };
+
+                    let clothes = JSON.parse(localStorage.getItem('clothes')) || [];
+                    clothes.push(newClothes);
+                    localStorage.setItem('clothes', JSON.stringify(clothes));
+
+                    document.getElementById('addClothesForm').reset();
+                    alert('Clothes added successfully!');
+                    displayClothes();
+                };
+
+                reader.readAsDataURL(file);
+            } else {
+                let clothes = JSON.parse(localStorage.getItem('clothes')) || [];
+                const updatedClothes = {
+                    image: clothes[editIndex].image,
+                    size: size,
+                    price: `$${price}`,
+                    description: description
+                };
+
+                if (imageInput.files.length > 0) {
+                    const file = imageInput.files[0];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        updatedClothes.image = e.target.result;
+                        clothes[editIndex] = updatedClothes;
+                        localStorage.setItem('clothes', JSON.stringify(clothes));
+                        resetForm();
+                        alert('Clothes updated successfully!');
+                        displayClothes();
+                    };
+
+                    reader.readAsDataURL(file);
+                } else {
+                    clothes[editIndex] = updatedClothes;
+                    localStorage.setItem('clothes', JSON.stringify(clothes));
+                    resetForm();
+                    alert('Clothes updated successfully!');
+                    displayClothes();
+                }
+            }
+        });
+
+        function displayClothes() {
+            const clothes = JSON.parse(localStorage.getItem('clothes')) || [];
+            const itemList = document.getElementById('itemList');
+            itemList.innerHTML = '';
+
+            clothes.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.classList.add('item');
+
+                const itemInfo = document.createElement('div');
+                itemInfo.classList.add('item-info');
+
+                const img = document.createElement('img');
+                img.src = item.image;
+                itemInfo.appendChild(img);
+
+                const details = document.createElement('div');
+                details.classList.add('item-details');
+                details.innerHTML = `<p>Size: ${item.size}</p><p>Price: ${item.price}</p><p>Description: ${item.description}</p>`;
+                itemInfo.appendChild(details);
+
+                const itemButtons = document.createElement('div');
+                itemButtons.classList.add('item-buttons');
+
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Edit';
+                editButton.addEventListener('click', () => {
+                    editClothes(index);
+                });
+
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Remove';
+                removeButton.classList.add('remove-button');
+                removeButton.addEventListener('click', () => {
+                    removeClothes(index);
+                });
+
+                itemButtons.appendChild(editButton);
+                itemButtons.appendChild(removeButton);
+
+                div.appendChild(itemInfo);
+                div.appendChild(itemButtons);
+                itemList.appendChild(div);
+            });
+        }
+
+        function editClothes(index) {
+            let clothes = JSON.parse(localStorage.getItem('clothes')) || [];
+            const item = clothes[index];
+
+            document.getElementById('size').value = item.size;
+            document.getElementById('price').value = item.price.substring(1); // Remove $ sign
+            document.getElementById('description').value = item.description;
+
+            editIndex = index;
+            document.getElementById('cancelEdit').style.display = 'inline';
+        }
+
+        function removeClothes(index) {
+            let clothes = JSON.parse(localStorage.getItem('clothes')) || [];
+            clothes.splice(index, 1);
+            localStorage.setItem('clothes', JSON.stringify(clothes));
+            displayClothes();
+        }
+
+        function resetForm() {
+            document.getElementById('addClothesForm').reset();
+            editIndex = -1;
+            document.getElementById('cancelEdit').style.display = 'none';
+        }
+
+        document.getElementById('cancelEdit').addEventListener('click', resetForm);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            displayClothes();
+        });
+    </script>
+</body>
+</html>

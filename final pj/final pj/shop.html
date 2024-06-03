@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop</title>
+    <style>
+        /* General styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+            margin: 0;
+        }
+
+        #shop {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Styling for the shop items */
+        .item {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px;
+            width: 200px;
+            display: inline-block;
+            text-align: center;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .item img {
+            max-width: 100%;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+
+        .item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .item:hover img {
+            transform: scale(1.05);
+        }
+
+        .item p {
+            margin: 10px 0;
+            font-size: 1rem;
+        }
+
+        .item p.price {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .item p.size {
+            color: #3498db;
+        }
+
+        .item button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .item button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Styling for the cart */
+        #cart {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            width: 300px;
+            max-width: 100%;
+        }
+
+        #cart h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        #cart ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #cart ul li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #cart ul li:last-child {
+            border-bottom: none;
+        }
+
+        #cart-summary {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #cart-summary p {
+            margin-bottom: 10px;
+        }
+
+        #checkout-button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #checkout-button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Checkout Form Styles */
+        #checkout-form {
+            display: none;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            width: 300px;
+            max-width: 100%;
+            margin: 20px auto;
+        }
+
+        #checkout-form label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        #checkout-form input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #checkout-form button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #checkout-form button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Search bar styles */
+        #search-bar {
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        #search-input {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #search-button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background-color 0.3s;
+        }
+
+        #search-button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Shop</h1>
+
+    <!-- Search Bar -->
+    <div id="search-bar">
+        <input type="text" id="search-input" placeholder="Search clothes...">
+        <button id="search-button">Search</button>
+    </div>
+
+    <div id="shop"></div>
+
+    <div id="cart">
+        <h2>Cart</h2>
+        <ul id="cart-items"></ul>
+        <div id="cart-summary">
+            <p>Total Items: <span id="total-items">0</span></p>
+            <button id="checkout-button">Checkout</button>
+        </div>
+    </div>
+
+    <!-- Checkout Form -->
+    <div id="checkout-form">
+        <h2>Bank Statement</h2>
+        <form id="bank-form">
+            <label for="account-number">Account Number:</label>
+            <input type="text" id="account-number" name="account-number" required>
+
+            <label for="routing-number">Routing Number:</label>
+            <input type="text" id="routing-number" name="routing-number" required>
+
+            <button type="submit">Submit</button>
+        </form>
+        <p id="total-price-info">Total Price: $<span id="total-price">0.00</span></p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    const clothes = JSON.parse(localStorage.getItem('clothes')) || [];
+    const cartItems = [];
+
+    function addItemsToShop(items) {
+        const shopContainer = document.getElementById('shop');
+        shopContainer.innerHTML = ''; // Clear previous items
+
+        items.forEach(item => {
+            const div = document.createElement('div');
+            div.classList.add('item');
+
+            const img = document.createElement('img');
+            img.src = item.image;
+            div.appendChild(img);
+
+            const size = document.createElement('p');
+            size.textContent = `Size: ${item.size}`;
+            size.classList.add('size');
+            div.appendChild(size);
+
+            const price = document.createElement('p');
+            price.textContent = `Price: ${item.price}`;
+            price.classList.add('price');
+            div.appendChild(price);
+
+            const description = document.createElement('p');
+            description.textContent = item.description;
+            div.appendChild(description);
+
+            const button = document.createElement('button');
+            button.textContent = 'Add to Cart';
+            button.addEventListener('click', () => addToCart(item));
+            div.appendChild(button);
+
+            shopContainer.appendChild(div);
+        });
+    }
+
+    function addToCart(item) {
+        cartItems.push(item);
+        displayCartItems();
+    }
+
+    function displayCartItems() {
+        const cartContainer = document.getElementById('cart-items');
+        const totalItemsElement = document.getElementById('total-items');
+        cartContainer.innerHTML = '';
+        totalItemsElement.textContent = cartItems.length;
+
+        cartItems.forEach((item, index) => {
+            const li = document.createElement('li');
+            li.textContent = `${item.size} - ${item.price}`;
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remove';
+            removeButton.classList.add('remove-button');
+            removeButton.addEventListener('click', () => removeCartItem(index));
+            li.appendChild(removeButton);
+
+            cartContainer.appendChild(li);
+        });
+
+        calculateTotalPrice(); // Calculate total price after updating cart items
+    }
+
+    function removeCartItem(index) {
+        cartItems.splice(index, 1);
+        displayCartItems();
+    }
+
+    function calculateTotalPrice() {
+        const totalPrice = cartItems.reduce((total, item) => total + parseFloat(item.price.replace('$', '')), 0);
+        document.getElementById('total-price').textContent = totalPrice.toFixed(2);
+    }
+
+    const checkoutButton = document.getElementById('checkout-button');
+    const checkoutForm = document.getElementById('checkout-form');
+    checkoutButton.addEventListener('click', function() {
+        checkoutForm.style.display = 'block'; // Show checkout form
+        calculateTotalPrice();
+    });
+
+    const bankForm = document.getElementById('bank-form');
+    bankForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const accountNumber = document.getElementById('account-number').value;
+        const routingNumber = document.getElementById('routing-number').value;
+
+        // Here you can proceed with further processing like submitting data to server, etc.
+        // For now, we'll just reset the form and hide the checkout form.
+
+        bankForm.reset();
+        checkoutForm.style.display = 'none'; // Hide checkout form
+        alert(`Payment Successful! Account Number: ${accountNumber}, Routing Number: ${routingNumber}`);
+    });
+
+    const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-button');
+    searchButton.addEventListener('click', function() {
+        const query = searchInput.value.toLowerCase();
+        const filteredItems = clothes.filter(item => item.description.toLowerCase().includes(query));
+        addItemsToShop(filteredItems);
+    });
+
+    addItemsToShop(clothes);
+});
+
+    </script>
+</body>
+</html>
